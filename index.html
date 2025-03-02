@@ -2,23 +2,19 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Random Imgur Image from Album (Debug)</title>
+  <title>Random Imgur Image Redirect</title>
   <style>
     body { font-family: Arial, sans-serif; }
-    img { max-width: 100%; height: auto; }
     .error { color: red; }
   </style>
 </head>
 <body>
-  <h1>Random Imgur Image from Album</h1>
-  <div id="content">
-    <p>Loading...</p>
-  </div>
+  <p id="content">Loading...</p>
 
   <script>
     // Imgur API Client ID
     const clientId = "2f31cee72825ee2";
-    // 사용할 앨범의 해시 (예: "cOXqWOW")
+    // 사용할 앨범의 해시 (예: "WiBVQQL")
     const albumHash = "WiBVQQL";
     // Imgur API 앨범 이미지 엔드포인트
     const apiUrl = `https://api.imgur.com/3/album/${albumHash}/images`;
@@ -36,12 +32,13 @@
         return response.json();
       })
       .then(data => {
-        console.log("Imgur API response:", data);  // 콘솔에 전체 응답 확인
+        console.log("Imgur API response:", data); // 콘솔에 전체 응답 확인
         if (data.success && data.data && data.data.length > 0) {
           const images = data.data;
           const randomIndex = Math.floor(Math.random() * images.length);
           const randomImage = images[randomIndex];
-          displayImage(randomImage.link);
+          // 선택된 이미지의 링크로 브라우저 리디렉션 (주소창에 이미지 URL이 표시됩니다)
+          window.location.replace(randomImage.link);
         } else {
           displayError("No images found in the album. Please check if the album is public and contains images.");
         }
@@ -51,14 +48,9 @@
       });
     }
 
-    function displayImage(imageUrl) {
-      const contentDiv = document.getElementById("content");
-      contentDiv.innerHTML = `<img src="${imageUrl}" alt="Random Imgur Image">`;
-    }
-
     function displayError(message) {
-      const contentDiv = document.getElementById("content");
-      contentDiv.innerHTML = `<p class="error">${message}</p>`;
+      const contentEl = document.getElementById("content");
+      contentEl.innerHTML = `<span class="error">${message}</span>`;
     }
 
     // 페이지 로드 시 실행
