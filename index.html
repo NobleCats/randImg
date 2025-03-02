@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Random Imgur Image from Album (Debug)</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    img { max-width: 100%; height: auto; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Random Imgur Image from Album</h1>
+  <div id="content">
+    <p>Loading...</p>
+  </div>
+
+  <script>
+    // Imgur API Client ID
+    const clientId = "2f31cee72825ee2";
+    // 사용할 앨범의 해시 (예: "cOXqWOW")
+    const albumHash = "WiBVQQL";
+    // Imgur API 앨범 이미지 엔드포인트
+    const apiUrl = `https://api.imgur.com/3/album/${albumHash}/images`;
+
+    function fetchAlbumImages() {
+      fetch(apiUrl, {
+        headers: {
+          Authorization: `Client-ID ${clientId}`
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Imgur API error: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Imgur API response:", data);  // 콘솔에 전체 응답 확인
+        if (data.success && data.data && data.data.length > 0) {
+          const images = data.data;
+          const randomIndex = Math.floor(Math.random() * images.length);
+          const randomImage = images[randomIndex];
+          displayImage(randomImage.link);
+        } else {
+          displayError("No images found in the album. Please check if the album is public and contains images.");
+        }
+      })
+      .catch(error => {
+        displayError("Error fetching album images: " + error.message);
+      });
+    }
+
+    function displayImage(imageUrl) {
+      const contentDiv = document.getElementById("content");
+      contentDiv.innerHTML = `<img src="${imageUrl}" alt="Random Imgur Image">`;
+    }
+
+    function displayError(message) {
+      const contentDiv = document.getElementById("content");
+      contentDiv.innerHTML = `<p class="error">${message}</p>`;
+    }
+
+    // 페이지 로드 시 실행
+    fetchAlbumImages();
+  </script>
+</body>
+</html>
